@@ -14,10 +14,15 @@ app.get('/todos', function(req, res){
     var filterTodos = todos;
     if (queryParams.hasOwnProperty('completed')) {
         if (queryParams.completed === 'true'){
-            filterTodos = _.where(todos, {completed: true});
+            filterTodos = _.where(filterTodos, {completed: true});
         } else if (queryParams.completed === 'false') {
-            filterTodos = _.where(todos, {completed: false});
+            filterTodos = _.where(filterTodos, {completed: false});
         }
+    }
+    if (queryParams.hasOwnProperty('description')) {
+        filterTodos = _.filter(filterTodos, function(item) {
+            return ~item.description.toLowerCase().indexOf(queryParams.description.toLowerCase());
+        });
     }
     res.json(filterTodos);
 });
