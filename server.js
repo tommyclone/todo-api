@@ -17,7 +17,7 @@ app.get('/todos/:id', function(req, res) {
     var todoId = parseInt(req.params.id, 10);
     var todo = _.findWhere(todos, {id: todoId});
     if (!todo) {
-        res.status(404).json({ 
+        return res.status(404).json({ 
             error: 'todo not found.'
         });
     }
@@ -29,7 +29,7 @@ app.delete('/todos/:id', function(req, res){
     var todoId = parseInt(req.params.id, 10);
     var todo = _.findWhere(todos, {id: todoId});
     if (!todo) {
-        res.status(404).json({ 
+        return res.status(404).json({ 
             error: 'todo not found.'
         });
     }
