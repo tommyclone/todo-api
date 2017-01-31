@@ -31,11 +31,10 @@ app.get('/', function(req, res) {
 // POST /todos
 app.post('/todos', function(req, res) {
     var body = req.body;
-    
+    body = _.pick(body, 'description', 'completed');
     if (!_.isBoolean(body.completed) || !_.isString(body.description) || body.description.trim().length === 0) {
             return res.status(400).send();
     }
-    body = _.pick(body, 'description', 'completed');
     body.description = body.description.trim();
     body.id = todoNextId++;
     todos.push(body);
