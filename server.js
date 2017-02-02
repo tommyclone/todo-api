@@ -31,13 +31,22 @@ app.get('/todos', function(req, res){
 // GET /todos/:id
 app.get('/todos/:id', function(req, res) {
     var todoId = parseInt(req.params.id, 10);
-    var todo = _.findWhere(todos, {id: todoId});
-    if (!todo) {
-        return res.status(404).json({ 
-            error: 'todo not found.'
-        });
-    }
-    res.json(todo);
+    db.todo.findById(todoId).then(function(todo){
+        if (!!todo) {
+            res.json(todo.toJSON());
+        } else {
+            res.status(404).json({'error': 'todo not found'});
+        }
+    }, function(e){
+        res.status(500).json(e);
+    });
+    // var todo = _.findWhere(todos, {id: todoId});
+    // if (!todo) {
+    //     return res.status(404).json({ 
+    //         error: 'todo not found.'
+    //     });
+    // }
+    // res.json(todo);
 });
 
 // DELETE /todos/:id
