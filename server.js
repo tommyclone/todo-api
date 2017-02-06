@@ -91,34 +91,32 @@ app.get('/', function(req, res) {
 app.put('/todos/:id', function(req, res){
 
     var todoId = parseInt(req.params.id, 10);
-    var todo = _.findWhere(todos, {id: todoId});
-    if (!todo) {
-        return res.status(404).json({ 
-            error: 'todo not found.'
-        });
-    }
-
     var body = req.body;
     body = _.pick(body, 'description', 'completed');
-    var validAttributes = {};
-    if (body.hasOwnProperty('completed') && _.isBoolean(body.completed)) {
-        validAttributes.completed = body.completed;
-    } else if(body.hasOwnProperty('completed')) {
-        return res.status(400).json({"error": "completed attribute must be boolean"});
+    var attributes = {};
+
+    if (body.hasOwnProperty('completed')) {
+        attributes.completed = body.completed;
     }
-    else {}
-
-    if (body.hasOwnProperty('description') && _.isString(body.description) && body.description.trim().length > 0) {
-        validAttributes.description = body.description;
-    } else if(body.hasOwnProperty('description')) {
-        return res.status(400).json({"error": "description attribute must non-empty string"});
+    if (body.hasOwnProperty('description')) {
+        attributes.description = body.description;
     }
-    else {}
+    db.todo.findById(todoId).then(function(todo){
+        if (todo) {
+            return todo.update(attributes);
+        } else {
+            res.status(404).json({'error': 'todo not found!'});
+        }
+    }, function (e) {
+        res.status(500).json(e);
+    }).then(function (todo) {
+        res.json(todo.toJSON());
+    }, function (e) {
+        res.status(400).json(e);
+    });
 
-    todo = _.extend(todo, validAttributes)
-
-    res.json(todo);
 })
+
 // POST /todos
 app.post('/todos', function(req, res) {
     var body = req.body;
